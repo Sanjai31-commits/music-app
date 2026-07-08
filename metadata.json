@@ -1,0 +1,6 @@
+{
+  "name": "Tamil Music Streaming",
+  "description": "A full-stack Tamil music streaming web application with user authentication, custom playlists, search, and categorized collections.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
