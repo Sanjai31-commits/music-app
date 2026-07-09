@@ -27,7 +27,8 @@ import {
   Trash2,
   Sliders,
   Check,
-  Edit2
+  Edit2,
+  Menu
 } from "lucide-react";
 import { Song, Playlist, User, SongCategory, Artist, Album } from "./types";
 import { api } from "./utils/api";
@@ -75,6 +76,16 @@ export default function App() {
 
   // Recently Played State
   const [recentlyPlayed, setRecentlyPlayed] = useState<Song[]>([]);
+
+  // Sidebar Collapsed State
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // Collapse sidebar on small screens initially
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarCollapsed(true);
+    }
+  }, []);
 
   // Profile Edit State
   const [profileEditOpen, setProfileEditOpen] = useState(false);
@@ -408,13 +419,25 @@ export default function App() {
 
       <div className="flex flex-1 overflow-hidden z-10">
         {/* ================= SIDEBAR NAV ================= */}
-        <aside className="w-64 bg-white/5 backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0">
-          <div className="p-6 pb-4">
-            <div className="flex items-center gap-2 mb-8">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-900/20">
+        <aside className={`${isSidebarCollapsed ? "w-20" : "w-64"} bg-white/5 backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 transition-all duration-300 ease-in-out`}>
+          <div className={`${isSidebarCollapsed ? "p-4" : "p-6"} pb-4 transition-all duration-300`}>
+            {/* Hamburger / Collapse Menu Button */}
+            <div className="mb-4">
+              <button
+                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 active:scale-95 transition-all flex items-center justify-center"
+                title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+                id="btn-sidebar-collapse"
+              >
+                <Menu className="h-5.5 w-5.5" />
+              </button>
+            </div>
+
+            <div className={`flex items-center gap-2 transition-all duration-300 overflow-hidden ${isSidebarCollapsed ? "h-0 opacity-0 mb-0 pointer-events-none" : "h-9 opacity-100 mb-8"}`}>
+              <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-900/20 shrink-0">
                 <Sparkles className="h-5 w-5 text-white animate-pulse" />
               </div>
-              <span className="text-2xl font-black tracking-tighter bg-gradient-to-r from-rose-400 to-amber-500 bg-clip-text text-transparent">
+              <span className="text-2xl font-black tracking-tighter bg-gradient-to-r from-rose-400 to-amber-500 bg-clip-text text-transparent truncate">
                 ISAIMIX
               </span>
             </div>
@@ -429,10 +452,14 @@ export default function App() {
                   activeTab === "home"
                     ? "text-white bg-white/10 shadow-sm border border-white/5"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
+                } ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
                 id="nav-home"
+                title="Home"
               >
-                <span>🏠</span> Home
+                <span className="text-lg shrink-0">🏠</span>
+                <span className={`transition-all duration-300 truncate ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Home
+                </span>
               </button>
               
               <button
@@ -444,10 +471,14 @@ export default function App() {
                   activeTab === "search"
                     ? "text-white bg-white/10 shadow-sm border border-white/5"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
+                } ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
                 id="nav-search"
+                title="Search Songs"
               >
-                <span>🔍</span> Search Songs
+                <span className="text-lg shrink-0">🔍</span>
+                <span className={`transition-all duration-300 truncate ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Search Songs
+                </span>
               </button>
 
               <button
@@ -463,10 +494,14 @@ export default function App() {
                   activeTab === "playlists"
                     ? "text-white bg-white/10 shadow-sm border border-white/5"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
+                } ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
                 id="nav-playlists"
+                title="Curated Playlists"
               >
-                <span>📚</span> Curated Playlists
+                <span className="text-lg shrink-0">📚</span>
+                <span className={`transition-all duration-300 truncate ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Curated Playlists
+                </span>
               </button>
 
               <button
@@ -482,17 +517,21 @@ export default function App() {
                   activeTab === "profile"
                     ? "text-white bg-white/10 shadow-sm border border-white/5"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
+                } ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
                 id="nav-profile"
+                title="Profile View"
               >
-                <span>👤</span> Profile View
+                <span className="text-lg shrink-0">👤</span>
+                <span className={`transition-all duration-300 truncate ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Profile View
+                </span>
               </button>
             </nav>
           </div>
 
           {/* Quick Mood Filters */}
-          <div className="mt-4 px-6 overflow-y-auto flex-1">
-            <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-3 px-2">
+          <div className={`mt-4 px-6 overflow-y-auto flex-1 transition-all duration-300 ${isSidebarCollapsed ? "px-2" : "px-6"}`}>
+            <h3 className={`text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-3 px-2 transition-all duration-300 ${isSidebarCollapsed ? "opacity-0 h-0 overflow-hidden mb-0" : "opacity-100"}`}>
               Tamil Melodies & Hits
             </h3>
             <div className="space-y-1">
@@ -502,10 +541,13 @@ export default function App() {
                   const element = document.getElementById("category-love");
                   if (element) element.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-rose-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-colors"
+                className={`w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-rose-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-all ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
+                title="Tamil Love Hits"
               >
-                <Heart className="h-3.5 w-3.5 text-rose-500 fill-rose-500/10" />
-                <span>Tamil Love Hits</span>
+                <Heart className="h-4 w-4 text-rose-500 fill-rose-500/10 shrink-0" />
+                <span className={`transition-all duration-300 text-xs ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Tamil Love Hits
+                </span>
               </button>
 
               <button
@@ -514,10 +556,13 @@ export default function App() {
                   const element = document.getElementById("category-melody");
                   if (element) element.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-teal-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-colors"
+                className={`w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-teal-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-all ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
+                title="Melody Magic"
               >
-                <Disc className="h-3.5 w-3.5 text-teal-400" />
-                <span>Melody Magic</span>
+                <Disc className="h-4 w-4 text-teal-400 shrink-0" />
+                <span className={`transition-all duration-300 text-xs ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Melody Magic
+                </span>
               </button>
 
               <button
@@ -526,10 +571,13 @@ export default function App() {
                   const element = document.getElementById("category-mass");
                   if (element) element.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-amber-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-colors"
+                className={`w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-amber-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-all ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
+                title="Mass Anthems"
               >
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                <span>Mass Anthems</span>
+                <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+                <span className={`transition-all duration-300 text-xs ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Mass Anthems
+                </span>
               </button>
 
               <button
@@ -538,17 +586,20 @@ export default function App() {
                   const element = document.getElementById("category-folk");
                   if (element) element.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-orange-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-colors"
+                className={`w-full text-left flex items-center gap-2.5 text-slate-400 hover:text-orange-400 text-sm py-2 px-3 rounded-lg hover:bg-white/5 transition-all ${isSidebarCollapsed ? "justify-center px-2" : ""}`}
+                title="Folk Beats"
               >
-                <Music className="h-3.5 w-3.5 text-orange-500" />
-                <span>Folk Beats</span>
+                <Music className="h-4 w-4 text-orange-500 shrink-0" />
+                <span className={`transition-all duration-300 text-xs ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100 ml-1"}`}>
+                  Folk Beats
+                </span>
               </button>
             </div>
 
             {/* Playlists sidebar list */}
             {currentUser && playlists.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-3 px-2 flex items-center justify-between">
+                <h3 className={`text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-3 px-2 flex items-center justify-between transition-all duration-300 ${isSidebarCollapsed ? "opacity-0 h-0 overflow-hidden mb-0" : "opacity-100"}`}>
                   <span>My Playlists</span>
                   <FolderHeart className="h-3.5 w-3.5 text-rose-500" />
                 </h3>
@@ -560,9 +611,13 @@ export default function App() {
                         setSelectedPlaylist(playlist);
                         setActiveTab("playlists");
                       }}
-                      className="w-full text-left text-xs truncate text-slate-400 hover:text-white py-1.5 px-3 rounded-lg hover:bg-white/5 transition-all block"
+                      className={`w-full text-left text-xs truncate text-slate-400 hover:text-white py-1.5 px-3 rounded-lg hover:bg-white/5 transition-all block ${isSidebarCollapsed ? "text-center px-1" : ""}`}
+                      title={playlist.name}
                     >
-                      🎵 {playlist.name}
+                      <span>🎵</span>
+                      <span className={`transition-all duration-300 ml-2 ${isSidebarCollapsed ? "hidden" : "inline-block"}`}>
+                        {playlist.name}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -571,33 +626,37 @@ export default function App() {
           </div>
 
           {/* Create Playlist / Current User info in Sidebar bottom */}
-          <div className="p-4 mt-auto border-t border-white/5 bg-black/20">
+          <div className={`p-4 mt-auto border-t border-white/5 bg-black/20 transition-all duration-300 ${isSidebarCollapsed ? "p-2" : "p-4"}`}>
             {currentUser ? (
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => setCreatePlaylistOpen(true)}
-                  className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"
+                  className={`w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 ${isSidebarCollapsed ? "px-1" : ""}`}
                   id="btn-create-playlist-sidebar"
+                  title="Create Playlist"
                 >
-                  <Plus className="h-3.5 w-3.5 text-rose-500" />
-                  <span>Create Playlist</span>
+                  <Plus className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+                  <span className={`transition-all duration-300 ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"}`}>
+                    Create Playlist
+                  </span>
                 </button>
 
-                <div className="flex items-center justify-between bg-white/5 rounded-xl p-2.5 border border-white/5">
-                  <div className="flex items-center gap-2.5 min-w-0">
+                <div className={`flex items-center justify-between bg-white/5 rounded-xl p-2.5 border border-white/5 ${isSidebarCollapsed ? "flex-col gap-2 p-1" : ""}`}>
+                  <div className={`flex items-center gap-2.5 min-w-0 ${isSidebarCollapsed ? "justify-center" : ""}`}>
                     <img
                       src={currentUser.avatarUrl || "https://api.dicebear.com/7.x/adventurer/svg"}
                       alt={currentUser.name}
                       className="w-8 h-8 rounded-full border border-white/10 shrink-0 bg-zinc-900"
+                      title={currentUser.name}
                     />
-                    <div className="min-w-0">
+                    <div className={`min-w-0 transition-all duration-300 ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"}`}>
                       <div className="text-xs font-bold text-white truncate">{currentUser.name}</div>
                       <div className="text-[10px] text-slate-400 truncate">Tamil Premium</div>
                     </div>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0"
                     title="Log Out"
                     id="btn-logout-sidebar"
                   >
@@ -607,16 +666,19 @@ export default function App() {
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-slate-400 text-center mb-1">
+                <p className={`text-xs text-slate-400 text-center mb-1 transition-all duration-300 ${isSidebarCollapsed ? "hidden" : "block"}`}>
                   Login to unlock custom playlists & favorites!
                 </p>
                 <button
                   onClick={() => setAuthModalOpen(true)}
-                  className="w-full bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40"
+                  className={`w-full bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 ${isSidebarCollapsed ? "px-1" : ""}`}
                   id="btn-sidebar-login"
+                  title="Get Started Now"
                 >
-                  <UserIcon className="h-3.5 w-3.5" />
-                  <span>Get Started Now</span>
+                  <UserIcon className="h-3.5 w-3.5 shrink-0" />
+                  <span className={`transition-all duration-300 ${isSidebarCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"}`}>
+                    Get Started Now
+                  </span>
                 </button>
               </div>
             )}
